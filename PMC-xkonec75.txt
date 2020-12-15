@@ -1,6 +1,6 @@
 Architektury Výpočetních Systémů (AVS 2020)
 Projekt č. 2 (PMC)
-Login: xlogin00
+Login: xkonec75
 
 Úloha 1: Paralelizace původního řešení
 ===============================================================================

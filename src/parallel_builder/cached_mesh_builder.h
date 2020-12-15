@@ -1,11 +1,11 @@
 /**
  * @file    cached_mesh_builder.h
  *
- * @author  FULL NAME <xlogin00@stud.fit.vutbr.cz>
+ * @author  Daniel Konecny <xkonec75@stud.fit.vutbr.cz>
  *
  * @brief   Parallel Marching Cubes implementation using pre-computed field
  *
- * @date    DATE
+ * @date    18 December 2020
  **/
 
 #ifndef CACHED_MESH_BUILDER_H
