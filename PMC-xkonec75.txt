@@ -7,24 +7,81 @@ Login: xkonec75
 
 1) Kterou ze smyček (viz zadání) je vhodnější paralelizovat a co způsobuje 
    neefektivitu paralelizaci té druhé?
+   Je lepší paralelizovat smyčku ve (vnější) funkci marchCubes než tu ve funkci
+   evaluateFieldAt, která může vystupovat jako vnitřní. Dosáhneme tím
+   paralelizace větší části kódu, což je samozřejmě výhodnější.
+
+   Porovnání časů běhu pro "guided" plánování a vstup "dragon_vrip_res1"
+   při velikosti grid 64.
+   - Vnější smyčka (marchCubes) - 72062 ms
+   - Vnitřní smyčka (evaluateFieldAt) - 252900 ms
 
 2) Jaké plánování (rozdělení práce mezi vlákna) jste zvolili a proč? 
    Jaký vliv má velikost "chunk" při dynamickém plánování (8, 16, 32, 64)?
 
+   Zvolil jsem plánování "guided". Po provedení testů (výsledky níže) dávalo
+   spolu s dynamickým plánováním o nižší velikosti "chunk" (8/16) nejlepší
+   výsledky. Guided plánování by však mělo měnit velikost chunk v závislosti
+   na zbývajícím množství nedokončených operací (a dostupných zdrojích), a tedy
+   efektivněji využívat procesor. Beru ho tedy v obecnosti jako lepší variantu
+   plánování (při použití jiných dat). Dynamické plánování však nedosahuje
+   o mnoho horších výsledků, pouze s větší velikostí chunk se při dokončování
+   práce nevyužijí zdroje tak efektivně. Statické plánování dosahuje o něco
+   horších výsledků.
+
+   Testování jsem provedl na "dragon_vrip_res1" při velikosti grid 64.
+   - Guided - 72062 ms
+   - Dynamic (8) - 72063 ms
+   - Dynamic (16) - 72058 ms
+   - Dynamic (32) - 72276 ms
+   - Dynamic (64) - 72279 ms
+   - Static - 72453 ms
+
 3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+   Protože se trojúhelníky ukládají do datové strukturu "vector" a její metoda
+   "push_back" není atomická, mohlo by dojít k "race condition". Je třeba tedy
+   tento příkaz uzavřít do kritické sekce pomocí "#pragma omp critical".
 
 
 Úloha 2: Paralelní průchod stromem
 ===============================================================================
 
 1) Stručně popište použití OpenMP tasků ve vašem řešení.
+	Každá nová "menší instance kostky" vytvořená zanořením ve stromě má svůj
+	vlastní task. Ten se vytváří při průchodu "původní větší instancí" kostky,
+	kdy se rozděluje na 8 menších. Tasky mezi sebou sdílí proměnnou počítající
+	celkový počet trojúhelníků. Rekurzivní funkce treeDive před prvním volání
+	v marchCubes využívá pragmy omp parallel a single, pro zajištění jednoho
+	tasku pro hlavní (nezanořený) běh funkce.
 
 2) Jakým způsobem jste realizovali sesbírání celkového počtu trojúhelníků?
+	Při kompletním zanoření funkce buildTree vrátí počet trojúhelníků vytvořený
+	v ní a poté se postupným vynořováním tento počet akumuluje v proměnné.
+	Akumulace počtu trojúhelníků je docílena tím, že funkce treeDive vrací
+	počet trojuhelníků v ní vytvořený. Takže při vynořování z rekurze
+	si předává toto číslo dále, až je nakonec vrátí původní funkci marchCubes.
+	Proměnná s počtem trojúhelníků je sdílená mezi všemi tasky a přičítání do
+	ní je realizováno jako atomická operace pomocí pragmy (omp atomic update).
+	Také je využito pragmy omp taskwait pro zajištění, že všechny tasky
+	doběhnou před vrácením celkového počtu trojúhelníků (a tím i dokončení
+	generování trojúhelníků).
 
 3) Jaký vliv má na vaše řešení tzv. "cut-off"? Je vhodné vytvářet nový 
-   task pro každou krychli na nejnižší úrovni?
+	task pro každou krychli na nejnižší úrovni?
+	Cut-off zajistí, že z výpočtu vyřadíme větší podprostory celého prostoru
+	s objektem. Tyto podprostory však neobsahují žádné objekty. Normálně bychom
+	museli kontrolovat všechny podprostory o velikosti, kterou uvažujeme pro
+	vykreslování. Díky cut-off však můžeme vyřadit mnoho těchto podprostorů
+	najednou v podobě jedné velké krychle.
+	Ano, je vhodné vytvářet tasky i pro krychle na nejnižší úrovni. Za každou
+	z těchto krychlí se stále skrývá poměrně rozsáhlý výpočet, který je vhodné
+	paralelizovat pomocí tasků.
 
 4) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+	Stejně jako v předchozí úloze "loop", tedy:
+	Protože se trojúhelníky ukládají do datové strukturu "vector" a její metoda
+	"push_back" není atomická, mohlo by dojít k "race condition". Je třeba tedy
+	tento příkaz uzavřít do kritické sekce pomocí "#pragma omp critical".
 
 
 Úloha 3: Předvýpočet hodnot pole
