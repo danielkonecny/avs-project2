@@ -5,7 +5,7 @@
  *
  * @brief   Parallel Marching Cubes implementation using pre-computed field
  *
- * @date    18 December 2020
+ * @date    20 December 2020
  **/
 
 #ifndef CACHED_MESH_BUILDER_H

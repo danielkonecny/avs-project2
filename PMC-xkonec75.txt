@@ -7,6 +7,7 @@ Login: xkonec75
 
 1) Kterou ze smyček (viz zadání) je vhodnější paralelizovat a co způsobuje 
    neefektivitu paralelizaci té druhé?
+
    Je lepší paralelizovat smyčku ve (vnější) funkci marchCubes než tu ve funkci
    evaluateFieldAt, která může vystupovat jako vnitřní. Dosáhneme tím
    paralelizace větší části kódu, což je samozřejmě výhodnější.
@@ -38,6 +39,7 @@ Login: xkonec75
    - Static - 72453 ms
 
 3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+
    Protože se trojúhelníky ukládají do datové strukturu "vector" a její metoda
    "push_back" není atomická, mohlo by dojít k "race condition". Je třeba tedy
    tento příkaz uzavřít do kritické sekce pomocí "#pragma omp critical".
@@ -47,6 +49,7 @@ Login: xkonec75
 ===============================================================================
 
 1) Stručně popište použití OpenMP tasků ve vašem řešení.
+
 	Každá nová "menší instance kostky" vytvořená zanořením ve stromě má svůj
 	vlastní task. Ten se vytváří při průchodu "původní větší instancí" kostky,
 	kdy se rozděluje na 8 menších. Tasky mezi sebou sdílí proměnnou počítající
@@ -55,6 +58,7 @@ Login: xkonec75
 	tasku pro hlavní (nezanořený) běh funkce.
 
 2) Jakým způsobem jste realizovali sesbírání celkového počtu trojúhelníků?
+
 	Při kompletním zanoření funkce buildTree vrátí počet trojúhelníků vytvořený
 	v ní a poté se postupným vynořováním tento počet akumuluje v proměnné.
 	Akumulace počtu trojúhelníků je docílena tím, že funkce treeDive vrací
@@ -68,16 +72,19 @@ Login: xkonec75
 
 3) Jaký vliv má na vaše řešení tzv. "cut-off"? Je vhodné vytvářet nový 
 	task pro každou krychli na nejnižší úrovni?
+
 	Cut-off zajistí, že z výpočtu vyřadíme větší podprostory celého prostoru
 	s objektem. Tyto podprostory však neobsahují žádné objekty. Normálně bychom
 	museli kontrolovat všechny podprostory o velikosti, kterou uvažujeme pro
 	vykreslování. Díky cut-off však můžeme vyřadit mnoho těchto podprostorů
 	najednou v podobě jedné velké krychle.
+
 	Ano, je vhodné vytvářet tasky i pro krychle na nejnižší úrovni. Za každou
 	z těchto krychlí se stále skrývá poměrně rozsáhlý výpočet, který je vhodné
 	paralelizovat pomocí tasků.
 
 4) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+
 	Stejně jako v předchozí úloze "loop", tedy:
 	Protože se trojúhelníky ukládají do datové strukturu "vector" a její metoda
 	"push_back" není atomická, mohlo by dojít k "race condition". Je třeba tedy
@@ -91,6 +98,7 @@ Login: xkonec75
    Došlo k nějakým změnám ve využití paměťového subsystému v porovnání 
    s úlohou 1?
    (Ověřte nástrojem Intel VTune na některé z větších mřížek -- např. 512)
+
    Ano, propustnost paměti u větších mřížek (testoval jsem bun_zipper_res4
    a grid 512) negativně ovlivní běh programu (naměřeno omezení 12.4 %).
    Varianta využívající cache musí využívat i DRAM, loop jen cache. Dochází
@@ -98,6 +106,7 @@ Login: xkonec75
    než u varianty loop.
 
 2) V jaké situaci bude toto řešení nejvýhodnější (nejrychlejší)?
+
    V případě, že bude vykreslovaný prostor co nejvíc zaplněn krajními stěnami
    objektů, bude tato metoda nejvýhodnější. Využije se totiž mnoho dříve
    vypočítaných hodnot (z cache).
@@ -145,7 +154,7 @@ Login: xkonec75
 Dodatečné řešení (vylepšení algoritmu)
 ===============================================================================
 
-Implementoval jsem v rámci řešení Úlohy 4 ještě jednu variantu, která si ukládá
+Implementoval jsem v rámci řešení Úlohy 3 ještě jednu variantu, která si ukládá
 dříve použíté hodnoty pro následující použití. V podstatě se jedná o variantu
 cache, která však není předpočítaná dopředu. Tato varianta dosahuje nejlepších
 výsledků z mého měření (cca. 2080 ms pro dragon_vrip_res1 -g 64). Rozhodl jsem

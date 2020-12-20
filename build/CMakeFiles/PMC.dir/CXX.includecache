@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/training/dd-20-28-97/proj2/src/common/base_mesh_builder.h
+array
+-
+vector_helpers.h
+/home/training/dd-20-28-97/proj2/src/common/vector_helpers.h
+parametric_scalar_field.h
+/home/training/dd-20-28-97/proj2/src/common/parametric_scalar_field.h
+
+/home/training/dd-20-28-97/proj2/src/common/parametric_scalar_field.h
+string
+-
+vector
+-
+vector_helpers.h
+/home/training/dd-20-28-97/proj2/src/common/vector_helpers.h
+
+/home/training/dd-20-28-97/proj2/src/common/vector_helpers.h
+chrono
+-
+
+/home/training/dd-20-28-97/proj2/src/parallel_builder/cached_mesh_builder.cpp
+iostream
+-
+math.h
+-
+limits
+-
+cached_mesh_builder.h
+/home/training/dd-20-28-97/proj2/src/parallel_builder/cached_mesh_builder.h
+
+/home/training/dd-20-28-97/proj2/src/parallel_builder/cached_mesh_builder.h
+vector
+-
+limits
+-
+base_mesh_builder.h
+/home/training/dd-20-28-97/proj2/src/parallel_builder/base_mesh_builder.h
+
