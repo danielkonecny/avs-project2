@@ -24,8 +24,7 @@ public:
     CachedMeshBuilder(unsigned gridEdgeSize);
 
 protected:
-	float computeDistance(const Vec3_t<float> &pos, const ParametricScalarField &field);
-	void computeCachedDistances(const ParametricScalarField &field);
+	unsigned treeDive(const ParametricScalarField &field, Vec3_t<float> position, unsigned depth);
     unsigned marchCubes(const ParametricScalarField &field);
     float evaluateFieldAt(const Vec3_t<float> &pos, const ParametricScalarField &field);
     void emitTriangle(const Triangle_t &triangle);
